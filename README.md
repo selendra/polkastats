@@ -39,7 +39,7 @@ npm install --global yarn
 
 ### Mono repo
 
-Clone Polkastats repository and install js dependencies:
+Clone Polkastats-ng repository and install js dependencies:
 
 ```
 cd /usr/local/

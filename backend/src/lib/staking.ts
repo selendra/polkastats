@@ -251,7 +251,7 @@ export const addNewFeaturedValidator = async (
       (validator) =>
         validator.commission <= 10 &&
         validator.selfStake.div(10 ** config.tokenDecimals).gte(20) &&
-        !validator.active &&
+        validator.active &&
         !alreadyFeatured.includes(validator.stashAddress),
     )
     .map(({ rank }) => rank);

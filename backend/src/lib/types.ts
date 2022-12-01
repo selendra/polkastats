@@ -30,7 +30,6 @@ export interface BackendConfig {
   };
   logLevel: string;
   sentryDSN: string;
-  substrateApiSidecar: string;
   crawlers: CrawlerConfig[];
 }
 

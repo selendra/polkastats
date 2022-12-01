@@ -1,4 +1,5 @@
 // @ts-check
+require('dotenv').config();
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -18,8 +19,10 @@ const postgresConnParams = {
 };
 const port = process.env.PORT || 8000;
 const wsProviderUrl = 'ws://substrate-node:9944';
-const polkassemblyGraphQL = 'https://kusama.polkassembly.io/v1/graphql';
+const assemblyGraphQL = 'http://localhost:8080/v1/graphql';
 const app = express();
+
+console.log(postgresConnParams.host);
 
 // middleware
 app.use(cors());
@@ -219,7 +222,7 @@ app.get('/api/v1/batsignal/council-events', async (_req, res) => {
         let content = '';
         try {
           // @ts-ignore
-          const response = await fetch(polkassemblyGraphQL, {
+          const response = await fetch(assemblyGraphQL, {
             method: 'POST',
             body: JSON.stringify({ query: graphQlQuery }),
           });
@@ -238,7 +241,7 @@ app.get('/api/v1/batsignal/council-events', async (_req, res) => {
           proposal_id: proposalId,
           title,
           content,
-          polkassembly_link: `https://kusama.polkassembly.io/motion/${proposalId}`,
+          polkassembly_link: `https://assembly.selendra.org/motion/${proposalId}`,
           timestamp: row.timestamp,
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
         });

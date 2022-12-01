@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/node';
 import { ApiPromise } from '@polkadot/api';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { Client } from 'pg';
-import axios from 'axios';
 import { chunker, range, reverseRange, shortHash } from './utils';
 import { CrawlerConfig, LoggerOptions } from './types';
 import { dbParamQuery, dbQuery } from './db';
@@ -111,6 +110,7 @@ export const healthCheck = async (
 };
 
 export const storeMetadata = async (
+  api: ApiPromise,
   client: Client,
   blockNumber: number,
   blockHash: string,
@@ -121,10 +121,8 @@ export const storeMetadata = async (
 ): Promise<void> => {
   let metadata;
   try {
-    const response = await axios.get(
-      `${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`,
-    );
-    metadata = response.data;
+    const response = await api.rpc.state.getMetadata(blockHash);
+    metadata = response;
     logger.debug(loggerOptions, `Got runtime metadata at ${blockHash}!`);
   } catch (error) {
     logger.error(
@@ -141,9 +139,9 @@ export const storeMetadata = async (
     blockNumber,
     specName,
     specVersion,
-    Object.keys(metadata.metadata)[0],
+    Object.keys(metadata)[0],
     metadata.magicNumber,
-    metadata.metadata,
+    metadata,
     timestamp,
   ];
   const query = `
@@ -208,14 +206,14 @@ export const harvestBlock = async (
     const timestamp =
       blockNumber !== 0
         ? parseInt(
-            block.extrinsics
-              .find(
-                ({ method: { section, method } }) =>
-                  section === 'timestamp' && method === 'set',
-              )
-              .args[0].toString(),
-            10,
-          )
+          block.extrinsics
+            .find(
+              ({ method: { section, method } }) =>
+                section === 'timestamp' && method === 'set',
+            )
+            .args[0].toString(),
+          10,
+        )
         : 0;
 
     // Totals
@@ -317,6 +315,7 @@ export const harvestBlock = async (
       // const metadata = await api.rpc.state.getMetadata(blockHash);
 
       await storeMetadata(
+        api,
         client,
         blockNumber,
         blockHash.toString(),
@@ -361,13 +360,13 @@ export const harvestBlock = async (
       // Update account info for addresses found in events (only for block listener)
       doUpdateAccountsInfo
         ? updateAccountsInfo(
-            api,
-            client,
-            blockNumber,
-            timestamp,
-            loggerOptions,
-            blockEvents,
-          )
+          api,
+          client,
+          blockNumber,
+          timestamp,
+          loggerOptions,
+          blockEvents,
+        )
         : false,
     ]);
   } catch (error) {
@@ -451,7 +450,7 @@ export const harvestBlocks = async (
   endBlock: number,
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
-  const reverseOrder = true;
+  const reverseOrder = false;
   const blocks = reverseOrder
     ? reverseRange(startBlock, endBlock, 1)
     : range(startBlock, endBlock, 1);

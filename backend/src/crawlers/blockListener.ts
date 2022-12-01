@@ -69,6 +69,7 @@ const crawler = async () => {
         const specName = runtimeVersion.toJSON().specName;
         const specVersion = runtimeVersion.specVersion;
         await storeMetadata(
+          api,
           client,
           blockNumber,
           blockHash.toString(),

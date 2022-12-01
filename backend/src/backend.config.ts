@@ -13,7 +13,6 @@ export const backendConfig = {
   },
   logLevel: process.env.LOG_LEVEL || 'info',
   sentryDSN: process.env.SENTRY_DSN || '',
-  substrateApiSidecar: 'http://sidecar:9090',
   crawlers: [
     {
       name: 'blockListener',
@@ -45,7 +44,7 @@ export const backendConfig = {
         parseInt(process.env.RANKING_POLLING_TIME_MS, 10) || 5 * 60 * 1000,
       historySize: 84,
       erasPerDay: 4,
-      tokenDecimals: 12,
+      tokenDecimals: 18,
       featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
       statsPrecision: parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
     },

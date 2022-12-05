@@ -25,7 +25,7 @@ export const getThousandValidators = async (
   loggerOptions: LoggerOptions,
 ): Promise<any[]> => {
   try {
-    const response = await axios.get('https://kusama.w3f.community/candidates');
+    const response = await axios.get('https://selendra.org/candidates');
     return response.data;
   } catch (error) {
     logger.error(
@@ -34,7 +34,6 @@ export const getThousandValidators = async (
         error,
       )}`,
     );
-    Sentry.captureException(error);
     return [];
   }
 };

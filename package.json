@@ -12,7 +12,8 @@
     "polkadot",
     "substrate",
     "PoS",
-    "validator"
+    "validator",
+    "selendra"
   ],
   "author": "Mario Pino Uceda",
   "license": "Apache-2.0",
